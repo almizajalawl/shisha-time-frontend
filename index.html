@@ -150,16 +150,30 @@ function renderCart(){
   box.innerHTML+=`<hr>الإجمالي: ${total} ريال`;
 }
 
-async function sendOrder(){
-  if(cart.length==0)return alert("السلة فارغة");
-  const total=cart.reduce((s,p)=>s+p.price,0);
-  const res=await fetch(API+"/order",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({name:user.name,phone:user.phone,total})
+function sendOrder(){
+  if(cart.length===0){
+    alert("السلة فارغة");
+    return;
+  }
+
+  const total = cart.reduce((s,p)=>s+p.price,0);
+
+  let message = `طلب جديد 🔔
+الاسم: ${user.name}
+الجوال: ${user.phone}
+
+الطلبات:
+`;
+
+  cart.forEach(p=>{
+    message += `- ${p.name} (${p.price} ريال)\n`;
   });
-  const data=await res.json();
-  window.location.href=data.whatsappUrl;
+
+  message += `\nالإجمالي: ${total} ريال`;
+
+  const WHATSAPP = "00966566700298";
+  const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`;
+  window.open(url,"_blank");
 }
 </script>
 
