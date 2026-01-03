@@ -1,189 +1,161 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shisha Time</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shisha Time</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --main:#7c5cff;
+  --bg:#0b0615;
+  --card:#151022;
+  --text:#ffffff;
+  --gold:#f5c46b;
+}
 
-  <style>
-    :root{
-      --main:#7c5cff;
-      --bg:#0e0e13;
-      --card:#16161f;
-      --text:#ffffff;
-      --muted:#b8b8d1;
-      --gold:#e6c27a;
-    }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Tajawal',sans-serif;
+  background:radial-gradient(circle at top,var(--main),#12081f 60%);
+  color:var(--text);
+  padding:20px;
+}
 
-    *{box-sizing:border-box}
+h1{
+  text-align:center;
+  color:var(--gold);
+}
 
-    body{
-      margin:0;
-      font-family:'Tajawal',sans-serif;
-      background:linear-gradient(135deg,#1a0830,#0e0e13);
-      color:var(--text);
-    }
+.section{
+  background:var(--card);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:20px;
+}
 
-    header{
-      text-align:center;
-      padding:22px;
-      font-size:26px;
-      font-weight:800;
-      color:var(--gold);
-    }
+input{
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+}
 
-    .container{
-      max-width:520px;
-      margin:auto;
-      padding:15px;
-    }
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  font-size:18px;
+  cursor:pointer;
+}
 
-    .login{
-      background:var(--card);
-      padding:15px;
-      border-radius:12px;
-      margin-bottom:20px;
-      border:1px dashed #ffffff22;
-    }
+.primary{
+  background:#2ecc71;
+  color:#000;
+}
 
-    .login h3{margin:0 0 10px;color:var(--gold)}
+.product{
+  border:1px dashed #2b2340;
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:12px;
+}
 
-    input{
-      width:100%;
-      padding:10px;
-      margin-top:8px;
-      border:none;
-      border-radius:8px;
-      font-size:14px;
-    }
+.product h3{
+  margin:0 0 6px;
+  color:var(--gold);
+}
 
-    .product{
-      background:var(--card);
-      border-radius:14px;
-      padding:18px;
-      margin-bottom:15px;
-      border:1px solid #ffffff22;
-    }
-
-    .product h4{
-      margin:0 0 8px;
-      color:var(--gold);
-      font-size:18px;
-    }
-
-    .product button{
-      background:var(--main);
-      color:#fff;
-      border:none;
-      padding:10px 16px;
-      border-radius:10px;
-      cursor:pointer;
-      font-size:14px;
-    }
-
-    .cart{
-      margin-top:25px;
-      background:var(--card);
-      padding:15px;
-      border-radius:14px;
-      border:1px solid #ffffff22;
-    }
-
-    .cart h3{color:var(--gold);margin-top:0}
-
-    .checkout{
-      margin-top:15px;
-      background:#25d366;
-      color:#000;
-      border:none;
-      width:100%;
-      padding:14px;
-      border-radius:12px;
-      font-size:16px;
-      font-weight:700;
-      cursor:pointer;
-    }
-  </style>
+.cart{
+  margin-top:10px;
+  font-size:16px;
+}
+</style>
 </head>
 
 <body>
 
-<header>🟡 Shisha Time</header>
+<h1>Shisha Time 🟡</h1>
 
-<div class="container">
+<div class="section">
+  <h2>تسجيل الدخول</h2>
+  <input id="name" placeholder="اسم العميل">
+  <input id="phone" placeholder="رقم الجوال">
+</div>
 
-  <div class="login">
-    <h3>تسجيل الدخول</h3>
-    <input id="name" placeholder="اسم العميل">
-    <input id="phone" placeholder="رقم الجوال">
-  </div>
+<div class="section">
+  <h2>المنتجات</h2>
+  <div id="products">جاري التحميل...</div>
+</div>
 
-  <div id="products"></div>
-
-  <div class="cart">
-    <h3>🛒 السلة</h3>
-    <div id="cart">السلة فارغة</div>
-    <button class="checkout" onclick="sendOrder()">إرسال الطلب واتساب</button>
-  </div>
-
+<div class="section">
+  <h2>🛒 السلة</h2>
+  <div id="cart">السلة فارغة</div>
+  <div class="cart">الإجمالي: <span id="total">0</span> ريال</div>
+  <button class="primary" onclick="sendOrder()">إرسال الطلب واتساب</button>
 </div>
 
 <script>
-  const API = "https://shisha-time-backend.onrender.com";
-  const WHATSAPP = "00966566700298";
-  let cart = [];
+const API = "https://shisha-time-backend.onrender.com";
+let cart = [];
+let total = 0;
 
-  async function loadProducts(){
-    const res = await fetch(API + "/products");
-    const products = await res.json();
-    const box = document.getElementById("products");
-    box.innerHTML = "";
+fetch(API + "/products")
+.then(r=>r.json())
+.then(data=>{
+  const box = document.getElementById("products");
+  box.innerHTML="";
+  data.forEach(p=>{
+    const div=document.createElement("div");
+    div.className="product";
+    div.innerHTML=`
+      <h3>${p.name}</h3>
+      <p>السعر: ${p.price} ريال</p>
+      <button onclick="addToCart('${p.name}',${p.price})">إضافة للسلة</button>
+    `;
+    box.appendChild(div);
+  });
+});
 
-    products.forEach(p=>{
-      const div = document.createElement("div");
-      div.className="product";
-      div.innerHTML=`
-        <h4>${p.name}</h4>
-        <p>${p.price} ريال</p>
-        <button onclick="add('${p.name}',${p.price})">إضافة للسلة</button>
-      `;
-      box.appendChild(div);
-    });
+function addToCart(name,price){
+  cart.push({name,price});
+  total+=price;
+  renderCart();
+}
+
+function renderCart(){
+  const c=document.getElementById("cart");
+  if(cart.length===0){
+    c.innerText="السلة فارغة";
+    return;
+  }
+  c.innerHTML=cart.map(i=>`• ${i.name} (${i.price})`).join("<br>");
+  document.getElementById("total").innerText=total;
+}
+
+function sendOrder(){
+  const name=document.getElementById("name").value;
+  const phone=document.getElementById("phone").value;
+  if(!name||!phone||cart.length===0){
+    alert("أكمل البيانات والسلة");
+    return;
   }
 
-  function add(name,price){
-    cart.push({name,price});
-    renderCart();
-  }
-
-  function renderCart(){
-    if(cart.length===0){
-      document.getElementById("cart").innerText="السلة فارغة";
-      return;
-    }
-    let html="",total=0;
-    cart.forEach(i=>{
-      total+=i.price;
-      html+=`<div>${i.name} - ${i.price} ريال</div>`;
-    });
-    html+=`<hr>الإجمالي: ${total} ريال`;
-    document.getElementById("cart").innerHTML=html;
-  }
-
-  function sendOrder(){
-    if(cart.length===0){alert("السلة فارغة");return;}
-    const name=document.getElementById("name").value||"غير مذكور";
-    const phone=document.getElementById("phone").value||"غير مذكور";
-    let msg=`طلب جديد\\nالاسم: ${name}\\nالجوال: ${phone}\\n\\n`;
-    cart.forEach(i=>msg+=`- ${i.name} (${i.price} ريال)\\n`);
-    const total=cart.reduce((s,i)=>s+i.price,0);
-    msg+=`\\nالإجمالي: ${total} ريال`;
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`);
-  }
-
-  loadProducts();
+  fetch(API+"/order",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({name,phone,total})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    window.open(d.whatsappUrl,"_blank");
+  });
+}
 </script>
 
 </body>
